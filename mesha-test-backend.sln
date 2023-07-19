@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mesha-test-backend", "mesha-test-backend\mesha-test-backend.csproj", "{3276FF14-F67D-469A-8A01-E62A46EFB0F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3276FF14-F67D-469A-8A01-E62A46EFB0F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3276FF14-F67D-469A-8A01-E62A46EFB0F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3276FF14-F67D-469A-8A01-E62A46EFB0F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3276FF14-F67D-469A-8A01-E62A46EFB0F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
