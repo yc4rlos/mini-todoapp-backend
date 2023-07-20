@@ -1,5 +1,6 @@
 using mesha_test_backend.Data.Dtos;
 using mesha_test_backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ public class UsersController: ControllerBase
         _usersService = usersService;
     }
     
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReadUserDto>))]
      public ActionResult<IEnumerable<ReadUserDto>> FindAll()
@@ -30,6 +32,7 @@ public class UsersController: ControllerBase
          }
      }
 
+     [Authorize]
      [HttpGet("{id}")]
      [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReadUserDto))]
      [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -48,6 +51,7 @@ public class UsersController: ControllerBase
          }
      }
 
+     [AllowAnonymous]
      [HttpPost] 
      [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ReadUserDto))]
      [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -64,6 +68,7 @@ public class UsersController: ControllerBase
          }
      }
 
+     [Authorize]
      [HttpPatch("{id}")]
      [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ReadUserDto))]
      [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -83,6 +88,7 @@ public class UsersController: ControllerBase
          }
      }
 
+     [Authorize]
      [HttpDelete("{id}")]
      [ProducesResponseType(StatusCodes.Status204NoContent)]
      public IActionResult Delete(string id)
@@ -103,8 +109,6 @@ public class UsersController: ControllerBase
          return Problem(
              detail: e.ToString(),
              title: "Erro interno."
-             );
+         );
      }
-     
-     
 }

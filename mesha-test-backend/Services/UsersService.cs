@@ -78,12 +78,16 @@ public class UsersService
         _dbcontext.SaveChanges();
     }
 
-    public bool CheckPassword(string email, string password)
+    public ReadUserDto? CheckPassword(string email, string password)
     {
         var user = _dbcontext.Users.FirstOrDefault(u => u.Email == email);
 
-        if (user == null) return false;
+        if (user == null) return null;
 
-        return BCrypt.Net.BCrypt.Verify(user.Password, password);
+        var verified = BCrypt.Net.BCrypt.Verify(password, user.Password);
+
+        if (!verified) return null;
+
+        return _mapper.Map<ReadUserDto>(user);
     }
 }
