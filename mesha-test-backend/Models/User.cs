@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace mesha_test_backend.Models;
 
@@ -19,5 +20,14 @@ public class User: BaseEntity
     [MaxLength(25)]
     [MinLength(8)]
     public string Password { get; set; }
-    
+
+    public ICollection<Task> Tasks { get; set; }
+    protected void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Tasks)
+            .WithOne(t => t.User)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+
 }
