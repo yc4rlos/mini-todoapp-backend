@@ -1,6 +1,4 @@
-using mesha_test_backend.Data;
 using mesha_test_backend.Data.Dtos;
-using mesha_test_backend.Model;
 using mesha_test_backend.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

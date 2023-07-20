@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using mesha_test_backend.Data.Dtos;
-using mesha_test_backend.Model;
+using mesha_test_backend.Models;
 
 namespace mesha_test_backend.Profiles;
 

@@ -1,4 +1,4 @@
-﻿using mesha_test_backend.Model;
+﻿using mesha_test_backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace mesha_test_backend.Data;
