@@ -8,7 +8,7 @@ namespace mesha_test_backend.Services;
 
 public class UsersService
 {
-    
+    private readonly int _salt = 12;
     private readonly TasksDatabaseContext _dbcontext;
     private readonly IMapper _mapper;
 
@@ -35,7 +35,7 @@ public class UsersService
     {
         var user = _mapper.Map<User>(createUserDto);
         
-        user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password);
+        user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password, _salt);
 
         _dbcontext.Users.Add(user);
         _dbcontext.SaveChanges();
@@ -72,7 +72,7 @@ public class UsersService
         Console.WriteLine("User:" + user.Password);
 
         if(userData.Password != user.Password)
-            userData.Password = BCrypt.Net.BCrypt.HashPassword(userData.Password);
+            userData.Password = BCrypt.Net.BCrypt.HashPassword(userData.Password, _salt);
 
         _mapper.Map(userData, user);
         
