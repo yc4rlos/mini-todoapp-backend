@@ -9,7 +9,6 @@ public class CreateTaskDto
     [MaxLength(255)]
     public string Title { get; set; }
  
-    [Required(ErrorMessage = "A Descrição é obrigatória")]
     public string Description { get; set; }
 
     [Required(ErrorMessage = "O ID do usuário criador é obrigatório")]
