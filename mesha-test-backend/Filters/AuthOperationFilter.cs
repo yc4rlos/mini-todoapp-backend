@@ -24,11 +24,11 @@ public class AuthOperationFilter: IOperationFilter
                     {
                         Reference = new OpenApiReference
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "basic"
+                            Type=ReferenceType.SecurityScheme,
+                            Id="Bearer"
                         }
                     },
-                    new List<string>()
+                    new string[]{}
                 }
             }
         };
