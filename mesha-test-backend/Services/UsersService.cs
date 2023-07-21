@@ -42,7 +42,23 @@ public class UsersService
         return _mapper.Map<ReadUserDto>(user);
     }
 
-    public ReadUserDto? Update(string id, JsonPatchDocument<UpdateUserDto> patchUpdateUserDto)
+    public ReadUserDto Update(string id, UpdateUserDto updateUserDto)
+    {
+        var user = _dbcontext.Users.FirstOrDefault(u => u.Id.ToString() == id);
+        if (user == null) return null;
+
+        var userData = _mapper.Map(updateUserDto, user);
+
+        userData.UpdatedAt = DateTime.Now;
+
+        _dbcontext.Users.Update(userData);
+        _dbcontext.SaveChanges();
+
+        return _mapper.Map<ReadUserDto>(userData);
+
+    }
+
+    public ReadUserDto? UpdatePartial(string id, JsonPatchDocument<UpdateUserDto> patchUpdateUserDto)
     {
         var user = _dbcontext.Users.FirstOrDefault(u => u.Id.ToString() == id);
         if (user == null) return null;

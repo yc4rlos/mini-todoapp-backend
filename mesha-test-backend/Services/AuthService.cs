@@ -46,10 +46,10 @@ public class AuthService
         {
             Subject = new ClaimsIdentity(new []
             {
-                new Claim("Id", readUserDto.Id.ToString()),
-                new Claim("Name", readUserDto.Name),
-                new Claim("Lastname", readUserDto.Lastname),
-                new Claim("Email", readUserDto.Email)
+                new Claim("id", readUserDto.Id.ToString()),
+                new Claim("name", readUserDto.Name),
+                new Claim("lastname", readUserDto.Lastname),
+                new Claim("email", readUserDto.Email)
             }),
             Expires = DateTime.UtcNow.AddHours(12),
             SigningCredentials = new SigningCredentials(

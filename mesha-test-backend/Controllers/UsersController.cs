@@ -67,20 +67,40 @@ public class UsersController: ControllerBase
              return InternalServerError(e);
          }
      }
+     
+     [Authorize]
+     [HttpPut("{id}")]
+     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ReadUserDto))]
+     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+     [ProducesResponseType(StatusCodes.Status404NotFound)]
+     public ActionResult<ReadUserDto> Update(string id, [FromBody] UpdateUserDto updateUserDto)
+     {
+         try
+         {
+             var user = _usersService.Update(id, updateUserDto);
+
+             if (user == null) return NotFound();
+             return CreatedAtAction(nameof(Update), user);
+         }
+         catch (Exception e)
+         {
+             return InternalServerError(e);
+         }
+     }
 
      [Authorize]
      [HttpPatch("{id}")]
      [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ReadUserDto))]
      [ProducesResponseType(StatusCodes.Status400BadRequest)]
      [ProducesResponseType(StatusCodes.Status404NotFound)]
-     public ActionResult<ReadUserDto> Update(string id, [FromBody] JsonPatchDocument<UpdateUserDto> patchUpdateUserDto)
+     public ActionResult<ReadUserDto> UpdatePartial(string id, [FromBody] JsonPatchDocument<UpdateUserDto> patchUpdateUserDto)
      {
          try
          {
-             var user = _usersService.Update(id, patchUpdateUserDto);
+             var user = _usersService.UpdatePartial(id, patchUpdateUserDto);
 
              if (user == null) return NotFound();
-             return CreatedAtAction(nameof(Update), user);
+             return CreatedAtAction(nameof(UpdatePartial), user);
          }
          catch (Exception e)
          {
