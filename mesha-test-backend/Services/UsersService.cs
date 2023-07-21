@@ -96,7 +96,7 @@ public class UsersService
 
     public ReadUserDto? CheckPassword(string email, string password)
     {
-        var user = _dbcontext.Users.FirstOrDefault(u => u.Email == email);
+        var user = _dbcontext.Users.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
 
         if (user == null) return null;
 
