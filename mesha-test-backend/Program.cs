@@ -13,6 +13,18 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddDbContext<TasksDatabaseContext>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// Cors Policy
+
+var myAllowSpecificOrigins = "app"; 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: myAllowSpecificOrigins,
+        policy  =>
+        {
+            policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+        });
+});
+
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(options =>
 {
@@ -55,6 +67,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// Configure Cors Policy
+app.UseCors(myAllowSpecificOrigins);
 
 // Configure the JWT Authentication
 app.UseAuthentication();
