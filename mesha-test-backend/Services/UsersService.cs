@@ -3,6 +3,7 @@ using mesha_test_backend.Data;
 using mesha_test_backend.Data.Dtos;
 using mesha_test_backend.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 
 namespace mesha_test_backend.Services;
 
@@ -34,7 +35,11 @@ public class UsersService
     public ReadUserDto Create(CreateUserDto createUserDto)
     {
         var user = _mapper.Map<User>(createUserDto);
-        
+
+        var alreadyRegistered = _dbcontext.Users.FirstOrDefault(u => u.Email.ToLower() == createUserDto.Email) != null;
+
+        if (alreadyRegistered) throw new BadHttpRequestException( "Endereço de e-mail já cadastrado");
+
         user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password, _salt);
 
         _dbcontext.Users.Add(user);
@@ -46,6 +51,14 @@ public class UsersService
     {
         var user = _dbcontext.Users.FirstOrDefault(u => u.Id.ToString() == id);
         if (user == null) return null;
+
+        var alreadyRegistered = false;
+        if(user.Email != updateUserDto.Email) 
+            alreadyRegistered = _dbcontext.Users.FirstOrDefault(u => u.Email.ToLower() == updateUserDto.Email) != null;
+
+        if (alreadyRegistered)
+            throw new BadHttpRequestException("Endereço de e-mail já cadastrado");
+        
 
         var userData = _mapper.Map(updateUserDto, user);
 
@@ -67,9 +80,11 @@ public class UsersService
         
         patchUpdateUserDto.ApplyTo(userData);
 
-        
-        Console.WriteLine("User Data:" + userData.Password);
-        Console.WriteLine("User:" + user.Password);
+        var alreadyRegistered = false;
+        if (user.Email != userData.Email)
+            alreadyRegistered = _dbcontext.Users.FirstOrDefault(u => u.Email == userData.Email) != null;
+
+        if (alreadyRegistered) throw new BadHttpRequestException("Endereço de e-mail já cadastrado");
 
         if(userData.Password != user.Password)
             userData.Password = BCrypt.Net.BCrypt.HashPassword(userData.Password, _salt);

@@ -59,8 +59,12 @@ public class UsersController: ControllerBase
      {
          try
          {
-    
+
              return CreatedAtAction(nameof(Create), _usersService.Create(createUserDto));
+         }
+         catch (BadHttpRequestException e)
+         {
+             return BadRequest(e.Message);
          }
          catch (Exception e)
          {
@@ -81,6 +85,10 @@ public class UsersController: ControllerBase
 
              if (user == null) return NotFound();
              return CreatedAtAction(nameof(Update), user);
+         } 
+         catch (BadHttpRequestException e)
+         {
+             return BadRequest(e.Message);
          }
          catch (Exception e)
          {
@@ -101,6 +109,10 @@ public class UsersController: ControllerBase
 
              if (user == null) return NotFound();
              return CreatedAtAction(nameof(UpdatePartial), user);
+         } 
+         catch (BadHttpRequestException e)
+         {
+             return BadRequest(e.Message);
          }
          catch (Exception e)
          {
