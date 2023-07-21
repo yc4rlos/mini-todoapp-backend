@@ -36,7 +36,29 @@ public class AuthService
         return loginData;
     }
 
-    public string GenerateToken(ReadUserDto readUserDto)
+    public ReadLoginDataDto? UdpateToken(string oldToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadToken(oldToken) as JwtSecurityToken;
+
+        var id = jsonToken.Claims.First(c => c.Type == "id").Value;
+
+        var user = _usersService.FindOneById(id);
+
+        if (user == null) return null;
+
+        var token = GenerateToken(user);
+
+        var loginData = new ReadLoginDataDto
+        {
+            User = user,
+            Token = token
+        };
+
+        return loginData;
+    }
+
+    private string GenerateToken(ReadUserDto readUserDto)
     {
 
         var tokenHandler = new JwtSecurityTokenHandler();

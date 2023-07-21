@@ -28,4 +28,17 @@ public class AuthController: ControllerBase
         
         return Ok(loginDataDto);
     }
+    
+    [Authorize]
+    [HttpGet("update-token")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReadLoginDataDto))]
+    public ActionResult<ReadLoginDataDto> UpdateToken([FromHeader(Name= "Authorization")] string authorization)
+    {
+        
+        var token = authorization.Split("Bearer ")[1];
+        
+        Console.WriteLine("Token "+token);
+
+        return _authService.UdpateToken(token);
+    }
 }
