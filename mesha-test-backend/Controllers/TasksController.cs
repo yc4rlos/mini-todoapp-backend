@@ -35,11 +35,11 @@ public class TasksController: ControllerBase
     [Authorize]
     [HttpGet("user/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReadTaskDto>))]
-    public ActionResult<IEnumerable<ReadTaskDto>> FindAllByUser(string userId)
+    public ActionResult<IEnumerable<ReadTaskDto>> FindAllByUser(string userId, [FromQuery(Name="find")] string? find = "")
     {
         try
         {
-            return Ok( _tasksService.FindAllByUser(userId));
+            return Ok(_tasksService.FindAllByUser(userId, find));
         }
         catch (Exception e)
         {

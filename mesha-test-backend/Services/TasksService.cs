@@ -25,10 +25,23 @@ public class TasksService
 
         return _mapper.Map<IEnumerable<ReadTaskDto>>(tasks);
     }
-    
-    public IEnumerable<ReadTaskDto> FindAllByUser(string userId)
+
+    public IEnumerable<ReadTaskDto> FindAllByUser(string userId, string? find)
     {
-        var tasks = _dbContext.Tasks.Where(t => t.UserId == userId).ToList();
+
+
+        var tasks = new List<Task>();
+        if(find == null)
+        {
+            tasks = _dbContext.Tasks.Where(t => t.UserId == userId).ToList();
+        }
+        else
+        {
+            var findValue = find.ToLower();
+            tasks = _dbContext.Tasks.Where(t =>
+                t.UserId == userId &&
+                (t.Title.ToLower().Contains(findValue) || t.Description.ToLower().Contains(findValue))).ToList();
+        }
 
         return _mapper.Map<IEnumerable<ReadTaskDto>>(tasks);
     }
