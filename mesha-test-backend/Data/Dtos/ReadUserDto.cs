@@ -9,4 +9,6 @@ public class ReadUserDto: BaseDto
 
     public string Email { get; set; }
     
+    public ICollection<ReadTaskDto> Tasks { get; set; }
+
 }

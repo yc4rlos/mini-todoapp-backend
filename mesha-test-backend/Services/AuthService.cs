@@ -2,9 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using mesha_test_backend.Data.Dtos;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace mesha_test_backend.Services;
 
@@ -36,12 +34,10 @@ public class AuthService
         return loginData;
     }
 
-    public ReadLoginDataDto? UdpateToken(string oldToken)
+    public ReadLoginDataDto? UdpateToken(string authorization)
     {
-        var handler = new JwtSecurityTokenHandler();
-        var jsonToken = handler.ReadToken(oldToken) as JwtSecurityToken;
-
-        var id = jsonToken.Claims.First(c => c.Type == "id").Value;
+        
+        var id = GetUserIdFromAuthorization(authorization);
 
         var user = _usersService.FindOneById(id);
 
@@ -81,5 +77,18 @@ public class AuthService
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public string GetUserIdFromAuthorization(string authorization)
+    {
+        
+        var token = authorization.Split("Bearer ")[1];
+        
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+
+        var id = jsonToken.Claims.First(c => c.Type == "id").Value.Trim();
+
+        return id;
     }
 }

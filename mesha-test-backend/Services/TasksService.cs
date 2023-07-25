@@ -12,11 +12,13 @@ public class TasksService
 {
     private readonly TasksDatabaseContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly AuthService _authService;
 
-    public TasksService(TasksDatabaseContext dbContext, IMapper mapper)
+    public TasksService(TasksDatabaseContext dbContext, IMapper mapper, AuthService authService)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _authService = authService;
     }
 
     public IEnumerable<ReadTaskDto> FindAll()
@@ -28,18 +30,17 @@ public class TasksService
 
     public IEnumerable<ReadTaskDto> FindAllByUser(string userId, string? find)
     {
-
-
+        
         var tasks = new List<Task>();
         if(find == null)
         {
-            tasks = _dbContext.Tasks.Where(t => t.UserId == userId).ToList();
+            tasks = _dbContext.Tasks.Where(t => t.UserId.ToString() == userId).ToList();
         }
         else
         {
             var findValue = find.ToLower();
             tasks = _dbContext.Tasks.Where(t =>
-                t.UserId == userId &&
+                t.UserId.ToString() == userId &&
                 (t.Title.ToLower().Contains(findValue) || t.Description.ToLower().Contains(findValue))).ToList();
         }
 
@@ -55,9 +56,12 @@ public class TasksService
         return _mapper.Map<ReadTaskDto>(task);
     }
     
-    public ReadTaskDto Create(CreateTaskDto createTaskDto)
+    public ReadTaskDto Create(CreateTaskDto createTaskDto, string authorization)
     {
+        var userId = _authService.GetUserIdFromAuthorization(authorization);
         var task = _mapper.Map<Models.Task>(createTaskDto);
+        task.UserId = Guid.Parse(userId);
+        
         _dbContext.Tasks.Add(task);
         _dbContext.SaveChanges();
 

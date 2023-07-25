@@ -21,7 +21,7 @@ public class AuthController: ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReadLoginDataDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<ReadLoginDataDto> Login([FromBody] LoginDto loginDto)
+    public ActionResult<ReadLoginDataDto> Login( LoginDto loginDto)
     {
         var loginDataDto = _authService.Login(loginDto);
         if (loginDataDto == null) return BadRequest("E-mail ou senha inválidos.");
@@ -32,13 +32,11 @@ public class AuthController: ControllerBase
     [Authorize]
     [HttpGet("update-token")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReadLoginDataDto))]
-    public ActionResult<ReadLoginDataDto> UpdateToken([FromHeader(Name= "Authorization")] string authorization)
+    public ActionResult<ReadLoginDataDto> UpdateToken([FromHeader] HeaderDto header)
     {
-        
-        var token = authorization.Split("Bearer ")[1];
-        
-        Console.WriteLine("Token "+token);
 
-        return _authService.UdpateToken(token);
+        var authorization = header.Authorization;
+        
+        return _authService.UdpateToken(authorization);
     }
 }

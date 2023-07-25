@@ -67,11 +67,13 @@ public class TasksController: ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ReadTaskDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<ReadTaskDto> Create([FromBody] CreateTaskDto createTaskDto)
+    public ActionResult<ReadTaskDto> Create([FromBody] CreateTaskDto createTaskDto, [FromHeader] HeaderDto header)
     {
         try
         {
-            return CreatedAtAction(nameof(Create), _tasksService.Create(createTaskDto));
+
+            var authorization = header.Authorization;
+            return CreatedAtAction(nameof(Create), _tasksService.Create(createTaskDto, authorization));
         }
         catch (Exception e)
         {

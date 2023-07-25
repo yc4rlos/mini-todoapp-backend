@@ -9,8 +9,9 @@ public class UserProfile: Profile
     public UserProfile()
     {
         CreateMap<CreateUserDto, User>();
-        CreateMap<User, ReadUserDto>();
-        CreateMap<UpdateUserDto, User>();
+        CreateMap<User, ReadUserDto>()
+            .ForMember(userDto => userDto.Tasks, 
+            opt => opt.MapFrom(user => user.Tasks));
         CreateMap<User, UpdateUserDto>();
     }
 }

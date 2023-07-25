@@ -3,7 +3,7 @@ using mesha_test_backend.Data;
 using mesha_test_backend.Data.Dtos;
 using mesha_test_backend.Models;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace mesha_test_backend.Services;
 
@@ -19,10 +19,9 @@ public class UsersService
         _mapper = mapper;
     }
     
-    public IEnumerable<ReadUserDto> FindAll()
+    public List<ReadUserDto> FindAll()
     {
-        var users = _dbcontext.Users.ToList();
-
+        var users = _dbcontext.Users.Include(u => u.Tasks).ToList();
         return _mapper.Map<List<ReadUserDto>>(users);
     }
 

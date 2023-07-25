@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace mesha_test_backend.Models;
 
@@ -15,14 +13,7 @@ public class Task: BaseEntity
     public bool Complete { get; set; } = false;
     
     [Required]
-    public string UserId { get; set; }
+    public Guid UserId { get; set; }
     
-    public User User { get; set; }
     
-    protected void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Task>()
-            .HasOne( t => t.User)
-            .WithMany(u => u.Tasks).IsRequired();
-    }
 }
