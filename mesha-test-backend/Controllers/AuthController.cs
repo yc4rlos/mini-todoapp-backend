@@ -28,7 +28,6 @@ public class AuthController: ControllerBase
         return Ok(loginDataDto);
     }
     
-    //TODO: Trocar por uma rota de refresh token
     [Authorize]
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReadLoginDataDto))]

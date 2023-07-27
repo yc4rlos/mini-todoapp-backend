@@ -19,12 +19,12 @@ public class TasksController: ControllerBase
     
     [Authorize]
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReadTaskDto>))]
-    public ActionResult<IEnumerable<ReadTaskDto>> FindAll()
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DataListDto<ReadTaskDto>))]
+    public ActionResult<DataListDto<ReadTaskDto>> FindAll([FromQuery] QueryParamsDto queryParamsDto)
     {
         try
         {
-            return Ok( _tasksService.FindAll());
+            return Ok( _tasksService.FindAll(queryParamsDto));
         }
         catch (Exception e)
         {
@@ -34,12 +34,12 @@ public class TasksController: ControllerBase
     
     [Authorize]
     [HttpGet("user/{userId}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReadTaskDto>))]
-    public ActionResult<IEnumerable<ReadTaskDto>> FindAllByUser(string userId, [FromQuery(Name="find")] string? find = "")
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DataListDto<ReadTaskDto>))]
+    public ActionResult<DataListDto<ReadTaskDto>> FindAllByUser(string userId, [FromQuery] QueryParamsDto queryParamsDto)
     {
         try
         {
-            return Ok(_tasksService.FindAllByUser(userId, find));
+            return Ok(_tasksService.FindAllByUser(userId, queryParamsDto));
         }
         catch (Exception e)
         {

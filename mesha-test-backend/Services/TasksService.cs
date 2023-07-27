@@ -21,30 +21,60 @@ public class TasksService
         _authService = authService;
     }
 
-    public IEnumerable<ReadTaskDto> FindAll()
+    public DataListDto<ReadTaskDto> FindAll(QueryParamsDto queryParamsDto)
     {
-        var tasks = _dbContext.Tasks.ToList();
+        var tasksData = _dbContext.Tasks.Take(queryParamsDto.Take).Skip(queryParamsDto.Take * (queryParamsDto.Page - 1));
+        
+        if(queryParamsDto.Find != null)
+        {
+            var findValue = queryParamsDto.Find.ToLower();
+            tasksData = tasksData.Where(t =>
+                t.Title.ToLower().Contains(findValue) || 
+                t.Description.ToLower().Contains(findValue));
+        }
 
-        return _mapper.Map<IEnumerable<ReadTaskDto>>(tasks);
+        var quantity = tasksData.Count();
+
+        var hasNextPage = quantity > queryParamsDto.Take * queryParamsDto.Page ;
+
+        var resp = new DataListDto<ReadTaskDto>
+        {
+            CurrentPage = queryParamsDto.Page,
+            Quantity = quantity,
+            HasNextPage = hasNextPage,
+            Data =  _mapper.Map<IEnumerable<ReadTaskDto>>(tasksData.ToList())
+        };
+
+        return resp;
     }
 
-    public IEnumerable<ReadTaskDto> FindAllByUser(string userId, string? find)
+    public DataListDto<ReadTaskDto> FindAllByUser(string userId, QueryParamsDto queryParamsDto)
     {
         
-        var tasks = new List<Task>();
-        if(find == null)
+        var tasksData = _dbContext.Tasks.Where(t => t.UserId.ToString() == userId);
+        
+        if(queryParamsDto.Find != null)
         {
-            tasks = _dbContext.Tasks.Where(t => t.UserId.ToString() == userId).ToList();
-        }
-        else
-        {
-            var findValue = find.ToLower();
-            tasks = _dbContext.Tasks.Where(t =>
-                t.UserId.ToString() == userId &&
-                (t.Title.ToLower().Contains(findValue) || t.Description.ToLower().Contains(findValue))).ToList();
+            var findValue = queryParamsDto.Find.ToLower();
+            tasksData = tasksData.Where(t =>
+                t.Title.ToLower().Contains(findValue) || t.Description.ToLower().Contains(findValue));
         }
 
-        return _mapper.Map<IEnumerable<ReadTaskDto>>(tasks);
+        var quantity = tasksData.Count();
+
+        tasksData = tasksData.Take(queryParamsDto.Take).Skip(queryParamsDto.Take * (queryParamsDto.Page - 1));
+
+        var hasNextPage = quantity > queryParamsDto.Take * queryParamsDto.Page ;
+
+        var resp = new DataListDto<ReadTaskDto>
+        {
+            CurrentPage = queryParamsDto.Page,
+            Quantity = quantity,
+            HasNextPage = hasNextPage,
+            Data =  _mapper.Map<IEnumerable<ReadTaskDto>>(tasksData.ToList())
+        };
+
+        return resp;
     }
 
     public ReadTaskDto?  FindOneById(string id)

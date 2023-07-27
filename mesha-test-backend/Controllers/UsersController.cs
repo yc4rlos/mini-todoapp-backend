@@ -19,12 +19,12 @@ public class UsersController: ControllerBase
     
     [Authorize]
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ReadUserDto>))]
-     public ActionResult<IEnumerable<ReadUserDto>> FindAll()
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DataListDto<ReadUserDto>))]
+     public ActionResult<DataListDto<ReadUserDto>> FindAll([FromQuery] QueryParamsDto queryParamsDto)
      {
          try
          {
-             return Ok(_usersService.FindAll());
+             return Ok(_usersService.FindAll(queryParamsDto));
          }
          catch (Exception e)
          {

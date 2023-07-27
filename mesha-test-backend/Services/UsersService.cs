@@ -10,24 +10,46 @@ namespace mesha_test_backend.Services;
 public class UsersService
 {
     private readonly int _salt = 12;
-    private readonly TasksDatabaseContext _dbcontext;
+    private readonly TasksDatabaseContext _dbContext;
     private readonly IMapper _mapper;
 
-    public UsersService(TasksDatabaseContext dbcontext, IMapper mapper)
+    public UsersService(TasksDatabaseContext dbContext, IMapper mapper)
     {
-        _dbcontext = dbcontext;
+        _dbContext = dbContext;
         _mapper = mapper;
     }
     
-    public List<ReadUserDto> FindAll()
+    public DataListDto<ReadUserDto> FindAll(QueryParamsDto queryParamsDto)
     {
-        var users = _dbcontext.Users.Include(u => u.Tasks).ToList();
-        return _mapper.Map<List<ReadUserDto>>(users);
+        var usersData = _dbContext.Users.Include(u => u.Tasks).Take(queryParamsDto.Take).Skip(queryParamsDto.Take * (queryParamsDto.Page - 1));
+        
+        if(queryParamsDto.Find != null)
+        {
+            var findValue = queryParamsDto.Find.ToLower();
+            usersData = usersData.Where(t =>
+                t.Name.ToLower().Contains(findValue) || 
+                t.Lastname.ToLower().Contains(findValue) ||
+                t.Email.ToLower().Contains(findValue));
+        }
+
+        var quantity = usersData.Count();
+
+        var hasNextPage = quantity > queryParamsDto.Take * queryParamsDto.Page ;
+
+        var resp = new DataListDto<ReadUserDto>
+        {
+            CurrentPage = queryParamsDto.Page,
+            Quantity = quantity,
+            HasNextPage = hasNextPage,
+            Data =  _mapper.Map<IEnumerable<ReadUserDto>>(usersData.ToList())
+        };
+
+        return resp;
     }
 
     public ReadUserDto? FindOneById(string id)
     {
-        var user = _dbcontext.Users.FirstOrDefault(u => u.Id.ToString() == id);
+        var user = _dbContext.Users.FirstOrDefault(u => u.Id.ToString() == id);
         return _mapper.Map<ReadUserDto>(user);
     }
 
@@ -35,25 +57,25 @@ public class UsersService
     {
         var user = _mapper.Map<User>(createUserDto);
 
-        var alreadyRegistered = _dbcontext.Users.FirstOrDefault(u => u.Email.ToLower() == createUserDto.Email) != null;
+        var alreadyRegistered = _dbContext.Users.FirstOrDefault(u => u.Email.ToLower() == createUserDto.Email) != null;
 
         if (alreadyRegistered) throw new BadHttpRequestException( "Endereço de e-mail já cadastrado");
 
         user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password, _salt);
 
-        _dbcontext.Users.Add(user);
-        _dbcontext.SaveChanges();
+        _dbContext.Users.Add(user);
+        _dbContext.SaveChanges();
         return _mapper.Map<ReadUserDto>(user);
     }
 
     public ReadUserDto Update(string id, UpdateUserDto updateUserDto)
     {
-        var user = _dbcontext.Users.FirstOrDefault(u => u.Id.ToString() == id);
+        var user = _dbContext.Users.FirstOrDefault(u => u.Id.ToString() == id);
         if (user == null) return null;
 
         var alreadyRegistered = false;
         if(user.Email != updateUserDto.Email) 
-            alreadyRegistered = _dbcontext.Users.FirstOrDefault(u => u.Email.ToLower() == updateUserDto.Email) != null;
+            alreadyRegistered = _dbContext.Users.FirstOrDefault(u => u.Email.ToLower() == updateUserDto.Email) != null;
 
         if (alreadyRegistered)
             throw new BadHttpRequestException("Endereço de e-mail já cadastrado");
@@ -63,8 +85,8 @@ public class UsersService
 
         userData.UpdatedAt = DateTime.Now;
 
-        _dbcontext.Users.Update(userData);
-        _dbcontext.SaveChanges();
+        _dbContext.Users.Update(userData);
+        _dbContext.SaveChanges();
 
         return _mapper.Map<ReadUserDto>(userData);
 
@@ -72,7 +94,7 @@ public class UsersService
 
     public ReadUserDto? UpdatePartial(string id, JsonPatchDocument<UpdateUserDto> patchUpdateUserDto)
     {
-        var user = _dbcontext.Users.FirstOrDefault(u => u.Id.ToString() == id);
+        var user = _dbContext.Users.FirstOrDefault(u => u.Id.ToString() == id);
         if (user == null) return null;
 
         var userData = _mapper.Map<UpdateUserDto>(user);
@@ -81,7 +103,7 @@ public class UsersService
 
         var alreadyRegistered = false;
         if (user.Email != userData.Email)
-            alreadyRegistered = _dbcontext.Users.FirstOrDefault(u => u.Email == userData.Email) != null;
+            alreadyRegistered = _dbContext.Users.FirstOrDefault(u => u.Email == userData.Email) != null;
 
         if (alreadyRegistered) throw new BadHttpRequestException("Endereço de e-mail já cadastrado");
 
@@ -92,25 +114,25 @@ public class UsersService
         
         user.UpdatedAt = DateTime.Now;
         
-        _dbcontext.Users.Update(user);
+        _dbContext.Users.Update(user);
         
-        _dbcontext.SaveChanges();
+        _dbContext.SaveChanges();
 
         return _mapper.Map<ReadUserDto>(user);
     }
     
     public void Delete(string id)
     {
-        var user = _dbcontext.Users.FirstOrDefault(u => u.Id.ToString() == id);
+        var user = _dbContext.Users.FirstOrDefault(u => u.Id.ToString() == id);
         if (user == null) return;
 
-        _dbcontext.Users.Remove(user);
-        _dbcontext.SaveChanges();
+        _dbContext.Users.Remove(user);
+        _dbContext.SaveChanges();
     }
 
     public ReadUserDto? CheckPassword(string email, string password)
     {
-        var user = _dbcontext.Users.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
+        var user = _dbContext.Users.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
 
         if (user == null) return null;
 
