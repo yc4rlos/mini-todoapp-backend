@@ -46,6 +46,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TasksService>();
+builder.Services.AddScoped<RefreshTokensService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

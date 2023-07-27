@@ -1,5 +1,4 @@
-﻿using System.Security.Authentication;
-using mesha_test_backend.Data.Dtos;
+﻿using mesha_test_backend.Data.Dtos;
 using mesha_test_backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,14 +28,19 @@ public class AuthController: ControllerBase
         return Ok(loginDataDto);
     }
     
+    //TODO: Trocar por uma rota de refresh token
     [Authorize]
-    [HttpGet("update-token")]
+    [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReadLoginDataDto))]
-    public ActionResult<ReadLoginDataDto> UpdateToken([FromHeader] HeaderDto header)
+    public ActionResult<ReadLoginDataDto> RefreshToken(GetNewTokenDto getNewTokenDto)
     {
-
-        var authorization = header.Authorization;
-        
-        return _authService.UdpateToken(authorization);
+        try
+        {
+            return _authService.RefreshToken(getNewTokenDto);
+        }
+        catch (BadHttpRequestException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

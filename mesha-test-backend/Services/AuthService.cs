@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using mesha_test_backend.Data.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace mesha_test_backend.Services;
@@ -10,13 +11,14 @@ public class AuthService
 {
     private readonly UsersService _usersService;
     private readonly IConfiguration _configuration;
+    private readonly RefreshTokensService _refreshTokensService;
 
-    public AuthService(UsersService usersService,IConfiguration configuration )
+    public AuthService(UsersService usersService,IConfiguration configuration, RefreshTokensService refreshTokensService )
     {
         _usersService = usersService;
         _configuration = configuration;
+        _refreshTokensService = refreshTokensService;
     }
-    
     
     public ReadLoginDataDto? Login(LoginDto loginDto)
     {
@@ -25,30 +27,38 @@ public class AuthService
         if (user == null) return null;
         
         var token = GenerateToken(user);
+        
+        var refreshToken = _refreshTokensService.Create(user.Id.ToString());
+        
         var loginData = new ReadLoginDataDto
         {
             User = user,
-            Token = token
+            Token = token,
+            RefreshToken = refreshToken.Id.ToString()
         };
 
         return loginData;
     }
 
-    public ReadLoginDataDto? UdpateToken(string authorization)
+    public ReadLoginDataDto? RefreshToken(GetNewTokenDto getNewTokenDto)
     {
+        var refreshTokenDto = _refreshTokensService.FindOneById(getNewTokenDto.Token);
+
+        if (refreshTokenDto == null) throw new BadHttpRequestException("Token inválido");
+        var user = _usersService.FindOneById(refreshTokenDto.UserId.ToString());
         
-        var id = GetUserIdFromAuthorization(authorization);
-
-        var user = _usersService.FindOneById(id);
-
-        if (user == null) return null;
-
+        _refreshTokensService.Delete(refreshTokenDto.Id.ToString());
+        
+        if (user == null) throw new BadHttpRequestException("O usuário foi deletado");
         var token = GenerateToken(user);
-
+        
+        var refreshToken = _refreshTokensService.Create(user.Id.ToString());
+        
         var loginData = new ReadLoginDataDto
         {
             User = user,
-            Token = token
+            Token = token,
+            RefreshToken = refreshToken.Id.ToString()
         };
 
         return loginData;
