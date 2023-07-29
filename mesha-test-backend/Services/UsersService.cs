@@ -89,7 +89,6 @@ public class UsersService
         _dbContext.SaveChanges();
 
         return _mapper.Map<ReadUserDto>(userData);
-
     }
 
     public ReadUserDto? UpdatePartial(string id, JsonPatchDocument<UpdateUserDto> patchUpdateUserDto)

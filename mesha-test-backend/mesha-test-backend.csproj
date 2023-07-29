@@ -19,5 +19,9 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.20" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="mesha-test-backend.Tests" />
+    </ItemGroup>
 
 </Project>

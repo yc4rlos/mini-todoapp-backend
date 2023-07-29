@@ -6,6 +6,8 @@ namespace mesha_test_backend.Data;
 
 public class TasksDatabaseContext: DbContext
 {
+    public TasksDatabaseContext(DbContextOptions<TasksDatabaseContext> options): base(options) {}
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseInMemoryDatabase(databaseName: "Tasks");
